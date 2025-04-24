@@ -3,9 +3,10 @@ import pads from "./pads";
 
 const Drum = ({ darkmode }) => {
   const [activePad, setActivePad] = React.useState(null);
-
+  const [volume, setVolume] = React.useState(1);
   const handleStick = (id, sound) => {
     const audio = new Audio(sound);
+    audio.volume = volume;
     audio.play();
     setActivePad(id);
     setTimeout(() => {
@@ -29,7 +30,7 @@ const Drum = ({ darkmode }) => {
       const id = keyMap[key];
       const pad = pads.find((pad) => pad.id === id);
 
-      handleStick(pad.id, pad.sound);
+      if (pad) handleStick(pad.id, pad.sound);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -38,22 +39,37 @@ const Drum = ({ darkmode }) => {
   }, []);
 
   return (
-    <div
-      className={`p-8 grid grid-cols-4 gap-6 ${
-        darkmode ? "bg-zinc-900" : "bg-white"
-      }`}
-    >
-      {pads.map((pad) => (
-        <button
-          key={pad.id}
-          onClick={() => handleStick(pad.id, pad.sound)}
-          style={{ backgroundColor: pad.color }}
-          className={`w-full flex items-center justify-center aspect-square rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transform transition-all duration-100 
+    <div className="p-4 bg-zinc-900">
+      <section
+        className={`p-8 grid grid-cols-4 gap-6 ${
+          darkmode ? "bg-zinc-900" : "bg-white"
+        }`}
+      >
+        {pads.map((pad) => (
+          <button
+            key={pad.id}
+            onClick={() => handleStick(pad.id, pad.sound)}
+            style={{ backgroundColor: pad.color }}
+            className={`w-full flex flex-col items-center justify-center aspect-square rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transform transition-all duration-100 
           ${activePad === pad.id ? "ring-3 ring-white" : ""}`}
-        >
-          <img className="w-14" src={pad.image} alt="drum kits" />
-        </button>
-      ))}
+          >
+            <img className="w-14" src={pad.image} alt="drum kits" />
+            <div className="text-xs mt-1 opacity-70">{pad.key}</div>
+          </button>
+        ))}
+      </section>
+      <section className="flex gap-2 pl-10 items-center">
+        <h3 className="text-white">V = {Math.round(volume * 10)}</h3>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={(e) => setVolume(parseFloat(e.target.value))}
+          className="mt-4 "
+        />
+      </section>
     </div>
   );
 };
