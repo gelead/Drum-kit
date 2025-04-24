@@ -26,10 +26,10 @@ const Drum = ({ darkmode }) => {
           key={pad.id}
           onClick={() => handleToggle(pad.id, pad.sound)}
           style={{ backgroundColor: pad.color }}
-          className={`w-full aspect-square rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transform transition-all duration-100 
+          className={`w-full flex items-center justify-center aspect-square rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transform transition-all duration-100 
           ${activePad === pad.id ? "ring-3 ring-white" : ""}`}
         >
-          Pad {pad.id}
+          <img className="w-14" src={pad.image} alt="drum kits" />
         </button>
       ))}
     </div>
