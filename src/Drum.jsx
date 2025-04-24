@@ -4,11 +4,14 @@ import pads from "./pads";
 const Drum = ({ darkmode }) => {
   const [activePad, setActivePad] = React.useState(null);
   const [volume, setVolume] = React.useState(1);
+  const [recording, setRecording] = React.useState([]);
+
   const handleStick = (id, sound) => {
     const audio = new Audio(sound);
     audio.volume = volume;
     audio.play();
     setActivePad(id);
+    setRecording(prev => [...prev, { id, sound }]);
     setTimeout(() => {
       setActivePad(null);
     }, 150);
@@ -29,6 +32,7 @@ const Drum = ({ darkmode }) => {
       const key = e.key;
       const id = keyMap[key];
       const pad = pads.find((pad) => pad.id === id);
+      
 
       if (pad) handleStick(pad.id, pad.sound);
     };
@@ -37,6 +41,17 @@ const Drum = ({ darkmode }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const playRecording = () => {
+    recording.forEach((clip, index) => {
+      setTimeout(() => {
+        const audio = new Audio(clip.sound);
+        audio.play();
+        setActivePad(clip.id);
+        setTimeout(() => setActivePad(null), 150);
+      }, index * 300); 
+    });
+  };
 
   return (
     <div className="p-4 bg-zinc-900">
@@ -69,6 +84,14 @@ const Drum = ({ darkmode }) => {
           onChange={(e) => setVolume(parseFloat(e.target.value))}
           className="mt-4 "
         />
+      </section>
+      <section>
+        <button
+          onClick={playRecording}
+          className="mt-4 p-2 bg-blue-500 text-white rounded"
+        >
+          Play Recording
+        </button>
       </section>
     </div>
   );
