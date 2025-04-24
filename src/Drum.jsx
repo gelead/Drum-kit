@@ -1,19 +1,41 @@
 import React from "react";
-import initpads from "./pads";
+import pads from "./pads";
 
 const Drum = ({ darkmode }) => {
-  const [pads, setPads] = React.useState(initpads);
   const [activePad, setActivePad] = React.useState(null);
 
-  const handleToggle = (id, sound) => {
+  const handleStick = (id, sound) => {
     const audio = new Audio(sound);
     audio.play();
-    setActivePad(id); 
-
+    setActivePad(id);
     setTimeout(() => {
       setActivePad(null);
     }, 150);
   };
+
+  React.useEffect(() => {
+    const keyMap = {
+      q: 1,
+      w: 2,
+      e: 3,
+      r: 4,
+      a: 5,
+      s: 6,
+      d: 7,
+      f: 8,
+    };
+    const handleKeyDown = (e) => {
+      const key = e.key;
+      const id = keyMap[key];
+      const pad = pads.find((pad) => pad.id === id);
+
+      handleStick(pad.id, pad.sound);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div
@@ -24,7 +46,7 @@ const Drum = ({ darkmode }) => {
       {pads.map((pad) => (
         <button
           key={pad.id}
-          onClick={() => handleToggle(pad.id, pad.sound)}
+          onClick={() => handleStick(pad.id, pad.sound)}
           style={{ backgroundColor: pad.color }}
           className={`w-full flex items-center justify-center aspect-square rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transform transition-all duration-100 
           ${activePad === pad.id ? "ring-3 ring-white" : ""}`}
